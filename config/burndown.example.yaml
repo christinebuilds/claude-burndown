@@ -1,0 +1,34 @@
+# claude-burndown configuration
+# Copy this file to ~/.config/claude-burndown/burndown.yaml and customize.
+
+# Where to write nightly burndown reports
+log_dir: ~/burndown-logs
+
+# Maximum minutes to spend on autonomous tasks per run (default: 60)
+max_execution_minutes: 60
+
+# Projects to scan
+# Add your own projects here. Each project needs at minimum a name and path.
+projects:
+  # Example: a web app
+  # - name: my-webapp
+  #   path: ~/code/my-webapp
+  #   notes: ~/code/my-webapp/docs/burndown.md    # optional burndown tracker
+  #   exclude: [node_modules, .next, dist, .venv]  # dirs to skip when scanning
+
+  # Example: a Python API
+  # - name: my-api
+  #   path: ~/code/my-api
+  #   notes: ~/notes/projects/my-api/burndown.md
+  #   exclude: [.venv, __pycache__, .mypy_cache]
+
+  # Example: a monorepo
+  # - name: platform
+  #   path: ~/code/platform
+  #   exclude: [node_modules, .venv, dist, build, vendor]
+
+# Safety overrides (all default to the safest option)
+# safety:
+#   allow_delete_untracked: false   # allow deleting files not tracked by git
+#   allow_dependency_updates: true  # allow patch-version dependency updates
+#   require_tests_pass: true        # revert changes if tests fail

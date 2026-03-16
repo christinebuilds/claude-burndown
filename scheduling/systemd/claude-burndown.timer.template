@@ -1,0 +1,9 @@
+[Unit]
+Description=Run Claude Burndown nightly
+
+[Timer]
+OnCalendar=*-*-* __HOUR__:__MINUTE__:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

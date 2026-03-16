@@ -1,0 +1,15 @@
+[Unit]
+Description=Claude Code Nightly Burndown
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=__CLAUDE_PATH__ -p /nightly-burndown --allowedTools Edit,Write,Bash,Read,Glob,Grep,Agent,Skill
+WorkingDirectory=__WORKING_DIR__
+StandardOutput=append:__LOG_DIR__/latest.log
+StandardError=append:__LOG_DIR__/latest-error.log
+Environment=HOME=__HOME__
+Environment=PATH=__CLAUDE_BIN_DIR__:/usr/local/bin:/usr/bin:/bin
+
+[Install]
+WantedBy=default.target

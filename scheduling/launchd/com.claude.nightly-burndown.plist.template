@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.claude.nightly-burndown</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>__CLAUDE_PATH__</string>
+        <string>-p</string>
+        <string>/nightly-burndown</string>
+        <string>--allowedTools</string>
+        <string>Edit,Write,Bash,Read,Glob,Grep,Agent,Skill</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>__WORKING_DIR__</string>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>__HOUR__</integer>
+        <key>Minute</key>
+        <integer>__MINUTE__</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>__LOG_DIR__/latest.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>__LOG_DIR__/latest-error.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>__CLAUDE_BIN_DIR__:/usr/local/bin:/usr/bin:/bin</string>
+        <key>HOME</key>
+        <string>__HOME__</string>
+    </dict>
+</dict>
+</plist>
