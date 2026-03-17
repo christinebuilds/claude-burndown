@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.claude.security-monthly</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>$HOME/.local/bin/claude</string>
+        <string>-p</string>
+        <string>/security-check monthly</string>
+        <string>--allowedTools</string>
+        <string>Read,Glob,Grep,Bash(git log*),Bash(git diff*),Bash(git status*),Bash(npm audit*),Bash(pip audit*),Bash(uv pip audit*),Bash(cargo audit*),Bash(gh repo list*),Bash(gh api*),Bash(gh auth*),Bash(launchctl list*),Bash(ps aux*),Bash(find *),Bash(ls *),Bash(du *),Bash(cat *),Bash(softwareupdate*),Bash(brew *),Bash(fdesetup*)</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>$HOME/Coding</string>
+
+    <!-- 1st of each month at 2:00am -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Day</key>
+        <integer>1</integer>
+        <key>Hour</key>
+        <integer>2</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>$HOME/Coding/notes/security-logs/monthly-latest.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>$HOME/Coding/notes/security-logs/monthly-latest-error.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>HOME</key>
+        <string>$HOME</string>
+    </dict>
+</dict>
+</plist>
