@@ -1,28 +1,34 @@
 ---
 name: Bug Report
-about: Report a bug in a slash command
+about: A command behaved unexpectedly
 title: "[Bug] "
 labels: bug
 ---
 
-## Command affected
-<!-- Which slash command? e.g., /nightly-burndown, /review, /ship -->
+## Command
 
-## What happened
-<!-- Describe the bug clearly -->
+Which command? (e.g., `/nightly-burndown`, `/security-check`)
 
-## What you expected
-<!-- What should have happened instead -->
+## Expected behavior
+
+What should have happened?
+
+## Actual behavior
+
+What happened instead?
 
 ## Steps to reproduce
+
 1.
 2.
 3.
 
 ## Environment
-- OS: <!-- macOS / Linux / WSL -->
-- Claude Code version: <!-- Run `claude --version` -->
-- Shell: <!-- bash / zsh / fish -->
 
-## Logs or screenshots
-<!-- Paste relevant output or attach screenshots -->
+- OS: (e.g., macOS 14, Ubuntu 22.04)
+- Claude Code version:
+- How was the command run? (interactive session / scheduled / CLI)
+
+## Logs
+
+Paste any relevant output or burndown log excerpts.

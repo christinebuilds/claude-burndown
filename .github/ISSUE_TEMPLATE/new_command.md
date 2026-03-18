@@ -6,23 +6,25 @@ labels: new-command
 ---
 
 ## Command name
-<!-- e.g., /my-command -->
+
+`/command-name`
 
 ## What it does
-<!-- One-sentence description -->
+
+One-line description.
 
 ## Detailed behavior
-<!-- Step-by-step what the command should do when invoked -->
 
-## Why it's useful
-<!-- What workflow does this automate? How often would people use it? -->
+What should the command do, step by step?
 
-## Example usage
-```
-You: /my-command
+## Safety classification
 
-Claude: [expected behavior]
-```
+- [ ] Read-only (never modifies files)
+- [ ] Modifies files (interactive use, human present)
+- [ ] Autonomous (designed to run unattended)
 
-## Implementation notes
-<!-- Any technical considerations, dependencies, or constraints -->
+If autonomous, confirm the command enforces **all** hard safety rules (never push, never deploy, never touch secrets, etc.).
+
+## Use case
+
+When would someone use this? What workflow does it fit into?

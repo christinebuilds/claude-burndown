@@ -1,18 +1,22 @@
 ---
 name: Feature Request
-about: Suggest an improvement to an existing command
+about: An improvement to an existing command
 title: "[Feature] "
 labels: enhancement
 ---
 
-## Which command?
-<!-- Which slash command would this improve? Or is it a new general feature? -->
+## Command
 
-## What problem does this solve?
-<!-- Describe the pain point or workflow gap -->
+Which command does this affect? (or "general" if it applies broadly)
 
-## Proposed solution
-<!-- How should it work? Be specific about inputs and outputs -->
+## What would you like?
+
+Describe the improvement.
+
+## Why?
+
+What problem does this solve or what workflow does it improve?
 
 ## Alternatives considered
-<!-- Any other approaches you thought about -->
+
+Have you tried other approaches?
