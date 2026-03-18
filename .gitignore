@@ -1,0 +1,26 @@
+# User configuration (contains local project paths)
+burndown.yaml
+
+# Logs
+*.log
+burndown-logs/
+
+# Secrets
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Dependencies (if any get added accidentally)
+node_modules/
+.venv/
+__pycache__/

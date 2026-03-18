@@ -1,152 +1,141 @@
 # claude-burndown
 
-**A complete AI software factory for Claude Code.**
+**An opinionated, security-first command suite for autonomous Claude Code development.**
 
-claude-burndown is a collection of development workflow commands for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) — from planning through shipping. Install as slash commands, use them interactively or schedule them to run automatically.
+Autonomous AI coding is powerful. It is also dangerous. An unattended AI agent with access to your codebase, your secrets, your deploy pipelines, and your git remotes can do real damage — silently, at 3am, with no one watching.
 
-Every change is on a branch. Every change is tested. Nothing is pushed. You review and merge what you like.
+claude-burndown exists because that is unacceptable.
+
+This is a collection of slash commands for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) that covers the full development lifecycle — planning, building, QA, shipping, security, and overnight maintenance. Every command enforces hard safety boundaries. Every change lands on a branch. Nothing is pushed. Nothing is deployed. You review and merge what you like.
+
+Adapted from [garrytan/gstack](https://github.com/garrytan/gstack), extended with a security suite, autonomous execution, and upstream sync.
+
+---
+
+## Why this exists
+
+AI coding agents are getting good enough to run unsupervised. But "good enough to write code" is not the same as "safe enough to run unattended." Without guardrails, an autonomous agent can:
+
+- Push untested code to production
+- Leak secrets into git history
+- Add malicious or vulnerable dependencies
+- Delete files it shouldn't touch
+- Modify CI/CD pipelines
+- Deploy broken builds
+
+These are not hypothetical risks. They are the default behavior of an unconstrained agent given broad tool access.
+
+claude-burndown is the guardrail layer. It gives you an autonomous development pipeline with the constraints that a responsible engineering org would enforce — except the constraints are embedded in every command and cannot be overridden at runtime.
+
+---
+
+## The hard rules
+
+These rules are enforced across every command. They are non-negotiable. There is no flag, config option, or prompt that disables them.
+
+- **NEVER pushes to any remote** — all changes stay local on branches
+- **NEVER deploys anywhere** — no Railway, Vercel, Netlify, AWS, or any platform
+- **NEVER touches secrets or `.env` files** — credentials, tokens, and API keys are off-limits
+- **NEVER modifies CI/CD pipelines** — GitHub Actions, CircleCI, Jenkins configs are untouchable
+- **NEVER deletes files** — unless explicitly marked safe-to-delete in a burndown tracker
+- **NEVER adds dependencies without approval** — new packages require a human decision
+- **NEVER makes breaking changes** — no API changes, no removed exports, no interface changes
+
+If something unexpected happens, every change is on a `burndown/YYYY-MM-DD` branch. Delete the branch and move on.
+
+---
+
+## Two-layer safety: defense in depth
+
+Safety is enforced at two independent layers. Both must permit an action for it to happen.
+
+**Layer 1: Prompt rules** — every command contains explicit safety instructions that Claude follows during execution. These are non-negotiable directives embedded in the prompt itself. Claude is told what it must never do, and it obeys.
+
+**Layer 2: Tool allowlists** — when running on a schedule, the `--allowedTools` flag restricts which Claude Code tools can be invoked. This is a hard boundary enforced by Claude Code's runtime, not by the prompt. Even if the prompt were somehow manipulated, the tool layer blocks unauthorized actions.
+
+This is defense in depth. The prompt layer defines intent. The tool layer enforces capability. Neither alone is sufficient. Together, they create a system where autonomous execution is bounded by design.
+
+See [docs/SAFETY.md](docs/SAFETY.md) for the full safety model.
+
+---
+
+## Your virtual CISO
+
+claude-burndown includes a three-command security suite that acts as a chief information security officer built into your development workflow. It scans, attacks, and models threats against your own code — automatically, on a schedule, without you needing to remember.
+
+### `/security-check` — Continuous security monitoring
+
+A tiered security audit for your entire development environment. Three tiers, each progressively deeper:
+
+| Tier | What it checks | When to run |
+|------|---------------|-------------|
+| **Just-in-Time** | Secrets in staged files, dependency vetting, file permissions | Every commit / pre-push |
+| **Weekly** | Git history secret scan, full dependency audit, background processes, GitHub repo visibility, active integrations | Monday nights |
+| **Monthly** | OS security updates, credential rotation review, stale software cleanup, GitHub OAuth app audit | 1st of the month |
+
+```bash
+claude -p "/security-check"          # just-in-time + weekly (default)
+claude -p "/security-check quick"    # just-in-time only (pre-push)
+claude -p "/security-check monthly"  # all three tiers
+```
+
+### `/red-team` — Adversarial penetration testing
+
+A full adversarial security test against your own application. Thinks like an attacker — creative, persistent, systematic. Five test suites:
+
+1. **Prompt injection** — system prompt extraction, indirect injection via data channels, context overflow, tool manipulation, output poisoning
+2. **Auth & authorization** — auth bypass, IDOR, rate limit testing, free tier bypass
+3. **Input validation** — SQL injection, XSS, path traversal, command injection, oversized payloads
+4. **Configuration & headers** — security headers, CORS, exposed debug endpoints, information disclosure
+5. **Data exfiltration** — API key leakage, unbounded data returns, error message disclosure
+
+Only tests your own application. Never touches third-party services.
+
+### `/threat-model` — Attack surface mapping
+
+Maps every way an attacker could compromise your system. Produces a living `THREATS.md` with data flow diagrams, adversary profiles (script kiddie through supply chain attacker), STRIDE analysis, risk ratings, and specific mitigations.
+
+Think of it as the paranoid CISO who asks "what could go wrong?" before you ship.
 
 ---
 
 ## Commands
 
-### `/nightly-burndown` — Autonomous code maintenance
+### Security suite
 
-Scans your projects for no-regret tasks — TODO cleanups, missing error handling, lint fixes, test gaps, dead code — classifies them by risk, and executes the safe ones automatically.
+| Command | Purpose |
+|---------|---------|
+| `/security-check` | Tiered security audit — secrets, dependencies, credentials, configs |
+| `/red-team` | Adversarial penetration testing against your own app |
+| `/threat-model` | Attack surface mapping with STRIDE analysis and risk ratings |
 
-```
-$ claude -p /nightly-burndown
-```
+### Development pipeline
 
-```
-## Nightly Burndown — 2026-03-15
+| Command | Purpose |
+|---------|---------|
+| `/plan` | Multi-role architecture planning — CEO, Design, or Eng review modes |
+| `/qa` | Full QA: test, find bugs, fix with atomic commits, verify, write regression tests |
+| `/qa-only` | Bug audit without modifications — report only |
+| `/qa-design` | Design QA: spacing, hierarchy, typography, visual bugs |
+| `/ship` | Tests + secret scan + dependency audit + PR creation |
 
-### Will Execute (~47 min total)
-1. Add structured logging to adapters (25 min) — my-api
-2. Add retry logic with exponential backoff (20 min) — my-api
-3. Delete leftover test fixtures (2 min) — my-webapp
+### Maintenance
 
-### Needs Your Input
-- Which auth provider to migrate to? — my-api
-- Add pagination to search endpoint? — my-api
+| Command | Purpose |
+|---------|---------|
+| `/nightly-burndown` | Autonomous overnight code maintenance |
+| `/document-release` | Auto-update docs to match shipped code |
+| `/changelog` | Generate user-friendly release notes from git commits |
+| `/retro` | Engineering retrospective — commit history, velocity, patterns |
 
-Proceeding with autonomous tasks...
-```
+### Utilities
 
-**What it scans for:**
-- `TODO`, `FIXME`, `HACK`, `XXX` comments in source files
-- Missing or incomplete tests
-- Lint and type errors
-- Stale git branches and uncommitted changes
-- Outdated dependencies (patch versions only)
-- Burndown tracker files (if configured)
-
-**What it considers safe to execute:**
-- Adding logging, error handling, or retry logic
-- Fixing lint and type errors
-- Writing tests for existing code
-- Cleaning up resolved TODOs
-- Deleting files explicitly marked safe-to-delete
-- Updating docs to match current code
-
-**What it flags as "needs input":**
-- Architecture decisions
-- New dependencies
-- Deployment
-- Anything touching external services or credentials
-
----
-
-### `/security-check` — Security health scanner
-
-A tiered security audit for your development environment. Scans for leaked secrets, vulnerable dependencies, stale credentials, and risky configurations.
-
-```
-$ claude -p "/security-check weekly"
-```
-
-```
-# Security Check — 2026-03-17
-Tier: Just-in-Time + Weekly
-
-## Passed
-- No secrets in staged files
-- All .env files in .gitignore
-- No critical CVEs in dependencies
-- GitHub repo visibility matches intent
-
-## Warnings
-- 2 medium-severity npm advisories in my-webapp
-- Playwright cache using 512MB disk space
-
-## Recommended Actions
-1. Run `npm audit fix` in my-webapp
-2. Consider clearing Playwright cache if not actively testing
-```
-
-**Three tiers:**
-
-| Tier | What it checks | When to run |
-|------|---------------|-------------|
-| **Just-in-Time** | Secrets in staged files, new dependency vetting, file permissions | Every commit / pre-push |
-| **Weekly** | Git history secret scan, full dependency audit, background processes, GitHub repo visibility, active integrations | Monday nights |
-| **Monthly** | OS security updates, credential rotation, stale software cleanup, GitHub OAuth app audit | 1st of the month |
-
-**Run manually:**
-```bash
-claude -p "/security-check"          # default: just-in-time + weekly
-claude -p "/security-check quick"    # just-in-time only (pre-push)
-claude -p "/security-check weekly"   # just-in-time + weekly
-claude -p "/security-check monthly"  # all tiers
-```
-
----
-
-### `/plan` — Architecture planning
-
-Think through the problem before writing code. Explores 2-3 approaches with tradeoffs, identifies risks, and produces a concrete implementation plan. Gets alignment before building.
-
-```
-$ /plan
-```
-
-Best used at the start of a new feature, refactor, or complex change. Outputs a structured plan with file paths, steps, risks, and test strategy.
-
----
-
-### `/qa` — Find and fix bugs
-
-Full QA workflow: test the app (with real browser testing via Playwright when applicable), find bugs, fix them with atomic commits, verify fixes, and generate regression tests.
-
-```
-$ /qa
-```
-
-Each bug fix is a separate commit with a regression test. Outputs a QA report with findings, fixes, and confidence level. Supports web apps (browser testing), APIs (endpoint testing), and libraries (unit testing).
-
----
-
-### `/ship` — Release to GitHub
-
-The last step before code leaves your machine. Runs tests, scans for secrets, audits dependencies, reviews the diff for debug code, then creates a clean PR.
-
-```
-$ /ship
-```
-
-Never pushes directly to `main`. Always creates a branch + PR with a full description, test results, and security checklist.
-
----
-
-### `/document-release` — Update stale docs
-
-Auto-updates all project documentation to match what was just shipped. Audits README, ARCHITECTURE, CHANGELOG, and config examples against the current code.
-
-```
-$ /document-release
-```
-
-Best used after merging a PR. Each doc update is a separate commit.
+| Command | Purpose |
+|---------|---------|
+| `/api-review` | Lint REST APIs for consistency across endpoints |
+| `/design-consultation` | Design system proposal — aesthetic, typography, color, layout |
+| `/setup-browser-cookies` | Import browser cookies for authenticated Playwright testing |
+| `/gstack-sync` | Check upstream gstack for new or updated skills |
 
 ---
 
@@ -155,19 +144,22 @@ Best used after merging a PR. Each doc update is a separate commit.
 These commands chain together into a complete development workflow:
 
 ```
-/plan → build → /qa → /review → /ship → /document-release
+/plan  ->  build  ->  /qa  ->  /ship  ->  /document-release
+                                  |
+                          /security-check
+                          /red-team
+                          /threat-model
 ```
 
-| Step | Command | What it does |
+| Step | Command | What happens |
 |------|---------|-------------|
-| 1. Plan | `/plan` | Think through the approach, get alignment |
-| 2. Build | *(you + Claude)* | Write the code |
-| 3. QA | `/qa` | Test, find bugs, fix with atomic commits |
-| 4. Review | `/review` | Code review for risks and quality |
-| 5. Ship | `/ship` | Tests + secret scan + PR creation |
-| 6. Docs | `/document-release` | Update docs to match the code |
-| 7. Maintain | `/nightly-burndown` | Autonomous overnight maintenance |
-| 8. Secure | `/security-check` | Automated security audits |
+| 1 | `/plan` | Think through the approach, explore tradeoffs, get alignment |
+| 2 | *(you + Claude)* | Write the code |
+| 3 | `/qa` | Test, find bugs, fix with atomic commits, write regression tests |
+| 4 | `/ship` | Run tests, scan for secrets, audit dependencies, create PR |
+| 5 | `/document-release` | Update all docs to match the code |
+| 6 | `/nightly-burndown` | Autonomous overnight maintenance (scheduled) |
+| 7 | `/security-check` | Continuous security audits (scheduled) |
 
 ---
 
@@ -202,16 +194,18 @@ projects:
 
   - name: my-api
     path: ~/code/my-api
-    notes: ~/notes/api-burndown.md     # optional burndown tracker
+    notes: ~/notes/api-burndown.md
     exclude: [.venv, __pycache__]
 ```
 
-### 3. Run it
+### 3. Run
 
 From within a Claude Code session:
 ```
 /nightly-burndown
 /security-check
+/red-team
+/threat-model
 ```
 
 From the command line:
@@ -220,57 +214,21 @@ claude -p /nightly-burndown
 claude -p "/security-check weekly"
 ```
 
-Or let them run on a schedule — the installer sets this up for you.
-
----
-
-## Safety model
-
-claude-burndown is built for unattended execution. Safety is enforced at two layers: the prompt (what Claude is instructed to do) and the tool allowlist (what Claude is permitted to do).
-
-### Nightly burndown safety
-
-| Rule | Enforced by |
-|------|------------|
-| All changes on branches, never `main` | prompt |
-| Revert if tests fail | prompt |
-| Never push to any remote | prompt |
-| Never deploy anywhere | prompt |
-| Never delete files (unless marked safe) | prompt |
-| Never add dependencies | prompt |
-| Never touch secrets or `.env` files | prompt |
-| Never modify CI/CD pipelines | prompt |
-| Tool access restricted to file operations | `--allowedTools` flag |
-
-### Security check safety
-
-| Rule | Enforced by |
-|------|------------|
-| Read-only — never modifies files | prompt + `--allowedTools` |
-| No network access except `gh` CLI | `--allowedTools` flag |
-| Cannot install or remove packages | `--allowedTools` flag |
-| Cannot push code or modify remotes | `--allowedTools` flag |
-| Reports findings, never auto-fixes | prompt |
-
-If something unexpected happens with the burndown, every change is on a `burndown/YYYY-MM-DD` branch:
-
-```bash
-git branch -D burndown/2026-03-15   # delete unwanted changes
-```
-
-See [docs/SAFETY.md](docs/SAFETY.md) for the full safety model.
+Or let them run on a schedule.
 
 ---
 
 ## Scheduling
 
-The installer offers automated scheduling for all commands:
+The installer offers automated scheduling for all recurring commands:
 
 | Command | Default schedule | Purpose |
 |---------|-----------------|---------|
-| `/nightly-burndown` | Daily at 12:30am | Code maintenance |
+| `/nightly-burndown` | Daily at 12:30am | Autonomous code maintenance |
 | `/security-check weekly` | Monday at 1:00am | Security audit |
 | `/security-check monthly` | 1st of month at 2:00am | Deep security audit |
+
+All jobs run during off-peak hours (midnight-5am) to minimize token costs.
 
 | Platform | Method | Runs when asleep? |
 |----------|--------|-------------------|
@@ -278,25 +236,22 @@ The installer offers automated scheduling for all commands:
 | Linux | systemd user timer | Yes (if machine is on) |
 | Any Unix | cron | Yes (if machine is on) |
 
-Templates are in `scheduling/launchd/` and `scheduling/systemd/`.
-
-See [docs/SCHEDULING.md](docs/SCHEDULING.md) for management commands.
+Templates are in `scheduling/launchd/` and `scheduling/systemd/`. See [docs/SCHEDULING.md](docs/SCHEDULING.md) for management commands.
 
 ---
 
 ## How it works
 
-claude-burndown commands are [Claude Code slash commands](https://docs.anthropic.com/en/docs/claude-code) — markdown files that Claude interprets as structured instructions. The entire "program" is a prompt. There is no traditional code to execute.
+claude-burndown commands are [Claude Code slash commands](https://docs.anthropic.com/en/docs/claude-code) — markdown files that Claude interprets as structured instructions. The entire "program" is a prompt. There is no traditional code.
 
-This means:
 - **Zero dependencies** beyond Claude Code
-- **No build step, no runtime** — it runs inside your existing Claude Code environment
-- **Fully customizable** — edit the command files to change any behavior
+- **No build step, no runtime** — runs inside your existing Claude Code environment
+- **Fully customizable** — edit the markdown files to change any behavior
 - **Portable** — works on any project in any language
 
 ---
 
-## Configuration reference
+## Configuration
 
 See [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for the full YAML reference, including safety overrides and project options.
 
@@ -317,7 +272,11 @@ Removes all slash commands, scheduling jobs, and optionally the config. Logs are
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI installed and authenticated
 - macOS, Linux, or WSL
-- git (for branch creation and change tracking)
+- git
+
+## Attribution
+
+Adapted from [garrytan/gstack](https://github.com/garrytan/gstack). Extended with a security suite (security-check, red-team, threat-model), autonomous overnight execution (nightly-burndown), and automated upstream sync (gstack-sync).
 
 ## Contributing
 

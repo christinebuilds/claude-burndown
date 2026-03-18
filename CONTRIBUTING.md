@@ -34,6 +34,18 @@ Instructions for Claude when this command runs...
 3. Test locally before submitting
 4. Open a PR explaining what changed and why
 
+## Safety rules for autonomous commands
+
+Any command designed to run unattended **must** enforce these hard rules in its prompt. These are non-negotiable — PRs that weaken safety boundaries will not be merged.
+
+- **NEVER push to any remote** — all changes stay local on branches
+- **NEVER deploy anywhere** — no Railway, Vercel, Netlify, AWS, or any platform
+- **NEVER touch secrets or `.env` files** — credentials, tokens, and API keys are off-limits
+- **NEVER modify CI/CD pipelines** — GitHub Actions, CircleCI, Jenkins configs are untouchable
+- **NEVER delete files** — unless explicitly marked safe-to-delete in a burndown tracker
+- **NEVER add dependencies without approval** — new packages require a human decision
+- **NEVER make breaking changes** — no API changes, no removed exports, no interface changes
+
 ## Style guidelines
 
 - Commands should be **safe by default** — prefer read-only operations, ask before destructive actions
