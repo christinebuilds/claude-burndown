@@ -134,6 +134,7 @@ Think of it as the paranoid CISO who asks "what could go wrong?" before you ship
 |---------|---------|
 | `/api-review` | Lint REST APIs for consistency across endpoints |
 | `/design-consultation` | Design system proposal — aesthetic, typography, color, layout |
+| `/release` | Semver tagging and GitHub release management |
 | `/setup-browser-cookies` | Import browser cookies for authenticated Playwright testing |
 | `/gstack-sync` | Check upstream gstack for new or updated skills |
 
