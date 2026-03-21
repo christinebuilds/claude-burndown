@@ -10,6 +10,8 @@ This is a collection of slash commands for [Claude Code](https://docs.anthropic.
 
 Adapted from [garrytan/gstack](https://github.com/garrytan/gstack), extended with a security suite, autonomous execution, and upstream sync.
 
+**Read the full story:** [Claude-ing after dark? How to practice safe autonomous coding.](https://christinesu.substack.com/p/claude-ing-after-dark-how-to-practice)
+
 ---
 
 ## Why this exists
