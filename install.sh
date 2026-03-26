@@ -8,6 +8,14 @@ REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONFIG_DIR="$HOME/.config/claude-burndown"
 CLAUDE_CMD_DIR="$HOME/.claude/commands"
 
+# Parse flags
+NON_INTERACTIVE=false
+for arg in "$@"; do
+    case "$arg" in
+        -y|--non-interactive) NON_INTERACTIVE=true ;;
+    esac
+done
+
 echo "claude-burndown installer"
 echo "========================="
 echo ""
@@ -38,15 +46,20 @@ echo "Found claude at: $CLAUDE_PATH"
 mkdir -p "$CLAUDE_CMD_DIR"
 
 if [ -f "$CLAUDE_CMD_DIR/nightly-burndown.md" ]; then
-    echo ""
-    echo "Existing /nightly-burndown command found."
-    read -p "Overwrite? [y/N] " -n 1 -r
-    echo ""
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "Keeping existing command."
-    else
+    if $NON_INTERACTIVE; then
         cp "$REPO_DIR/commands/nightly-burndown.md" "$CLAUDE_CMD_DIR/nightly-burndown.md"
         echo "Updated /nightly-burndown command."
+    else
+        echo ""
+        echo "Existing /nightly-burndown command found."
+        read -p "Overwrite? [y/N] " -n 1 -r
+        echo ""
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "Keeping existing command."
+        else
+            cp "$REPO_DIR/commands/nightly-burndown.md" "$CLAUDE_CMD_DIR/nightly-burndown.md"
+            echo "Updated /nightly-burndown command."
+        fi
     fi
 else
     cp "$REPO_DIR/commands/nightly-burndown.md" "$CLAUDE_CMD_DIR/nightly-burndown.md"
@@ -72,25 +85,30 @@ mkdir -p "$LOG_DIR"
 
 # --- Step 5: Offer scheduling ---
 
-echo ""
-echo "Schedule nightly burndown?"
-echo ""
-echo "  1) macOS (launchd) — recommended for Mac"
-echo "  2) Linux (systemd)"
-echo "  3) Cron (any Unix)"
-echo "  4) Skip — I'll run it manually"
-echo ""
-read -p "Choose [1-4]: " -n 1 -r SCHED_CHOICE
-echo ""
-
 HOUR=22
 MINUTE=0
 
-if [[ "$SCHED_CHOICE" =~ ^[1-3]$ ]]; then
-    read -p "Run at what hour? (0-23, default 22): " HOUR_INPUT
-    HOUR="${HOUR_INPUT:-22}"
-    read -p "Minute? (0-59, default 0): " MIN_INPUT
-    MINUTE="${MIN_INPUT:-0}"
+if $NON_INTERACTIVE; then
+    SCHED_CHOICE=4
+    echo "Non-interactive mode: skipping scheduling setup."
+else
+    echo ""
+    echo "Schedule nightly burndown?"
+    echo ""
+    echo "  1) macOS (launchd) — recommended for Mac"
+    echo "  2) Linux (systemd)"
+    echo "  3) Cron (any Unix)"
+    echo "  4) Skip — I'll run it manually"
+    echo ""
+    read -p "Choose [1-4]: " -n 1 -r SCHED_CHOICE
+    echo ""
+
+    if [[ "$SCHED_CHOICE" =~ ^[1-3]$ ]]; then
+        read -p "Run at what hour? (0-23, default 22): " HOUR_INPUT
+        HOUR="${HOUR_INPUT:-22}"
+        read -p "Minute? (0-59, default 0): " MIN_INPUT
+        MINUTE="${MIN_INPUT:-0}"
+    fi
 fi
 
 CLAUDE_BIN_DIR="$(dirname "$CLAUDE_PATH")"
